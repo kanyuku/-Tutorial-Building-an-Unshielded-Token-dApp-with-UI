@@ -37,9 +37,23 @@ export default function App() {
   const [sendAmount, setSendAmount] = useState<string>('');
   const [txHistory, setTxHistory] = useState<{ id: string; type: string; amount: string; time: string }[]>([]);
 
+  const [hasExtension, setHasExtension] = useState<boolean>(true);
+
   useEffect(() => {
     const unsubscribe = midnightProvider.subscribe(setWallet);
-    return unsubscribe;
+    
+    // Preliminary check for extension
+    const checkExt = () => {
+      const ext = (window as any).midnight || (window as any).cardano;
+      setHasExtension(!!ext);
+    };
+    
+    checkExt();
+    window.addEventListener('load', checkExt);
+    return () => {
+      unsubscribe();
+      window.removeEventListener('load', checkExt);
+    };
   }, []);
 
   const handleAction = async (name: string, fn: () => Promise<void>) => {
@@ -76,13 +90,30 @@ export default function App() {
         </div>
 
         <button 
-          onClick={() => wallet.isConnected ? midnightProvider.disconnect() : connectWallet()}
-          className={`flex items-center gap-2 px-4 py-2 border border-[#141414] font-mono text-xs uppercase transition-colors hover:bg-[#141414] hover:text-[#E4E3E0] ${wallet.isConnected ? 'bg-[#141414] text-[#E4E3E0]' : ''}`}
+          disabled={loading.connect}
+          onClick={() => wallet.isConnected 
+            ? midnightProvider.disconnect() 
+            : handleAction('connect', connectWallet)
+          }
+          className={`flex items-center gap-2 px-4 py-2 border border-[#141414] font-mono text-xs uppercase transition-all hover:bg-[#141414] hover:text-[#E4E3E0] active:scale-95 disabled:opacity-50 ${wallet.isConnected ? 'bg-[#141414] text-[#E4E3E0]' : ''}`}
         >
-          <Wallet className="w-4 h-4" />
-          {wallet.isConnected ? `Connected: ${wallet.address.slice(0, 6)}...${wallet.address.slice(-4)}` : 'Connect Wallet'}
+          {loading.connect ? (
+            <Activity className="w-4 h-4 animate-spin" />
+          ) : (
+            <Wallet className={`w-4 h-4 ${wallet.isConnected ? 'text-green-400' : ''}`} />
+          )}
+          {wallet.isConnected 
+            ? `Connected: ${wallet.address.slice(0, 6)}...${wallet.address.slice(-4)}` 
+            : 'Connect Wallet'
+          }
         </button>
       </nav>
+
+      {!hasExtension && !wallet.isConnected && (
+        <div className="bg-amber-100 border-b border-amber-500 p-2 text-center text-[10px] font-mono uppercase tracking-tighter text-amber-800">
+          No Midnight-compatible wallet detected. Please install <a href="https://www.lace.io/" target="_blank" rel="noopener" className="underline font-bold">Lace</a> or the Midnight extension.
+        </div>
+      )}
 
       <main className="max-w-7xl mx-auto p-6 md:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Left Column: Stats and Info */}

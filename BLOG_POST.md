@@ -75,8 +75,10 @@ In a production dApp, we don't mock. We use the official `@midnight-ntwrk/midnig
 ```typescript
 import { createContract, NetworkId } from '@midnight-ntwrk/midnight-js';
 
-// Connect to the provider
-const provider = await (window as any).midnight.connect();
+// Connect to the provider using the real Midnight Connector Protocol (MCP)
+// Note: Depending on your wallet version, you might use 'mn_enable()' or 'enable()'
+const connector = (window as any).midnight || (window as any).cardano.midnight;
+const provider = await (connector.mn_enable?.() || connector.enable?.());
 
 // Interaction with the compiled contract
 const contract = await createContract(TOKEN_CONFIG, provider);
