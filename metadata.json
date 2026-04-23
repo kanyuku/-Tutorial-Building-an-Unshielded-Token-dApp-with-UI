@@ -1,0 +1,6 @@
+{
+  "name": "Midnight Token dApp",
+  "description": "A beginner-friendly dApp for Minting, Sending, and Receiving Unshielded Tokens on the Midnight Network.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
