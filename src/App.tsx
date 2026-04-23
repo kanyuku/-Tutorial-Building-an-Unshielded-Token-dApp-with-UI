@@ -77,16 +77,11 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#E4E3E0] text-[#141414] font-sans selection:bg-[#141414] selection:text-white">
-      {/* Top Navigation / Header */}
-      <nav className="border-b border-[#141414] px-6 py-4 flex justify-between items-center bg-[#E4E3E0]/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="flex items-center gap-3">
-          <div className="bg-[#141414] p-1.5 rounded">
-            <ShieldOff className="text-[#E4E3E0] w-5 h-5" />
-          </div>
-          <div>
-            <h1 className="font-mono font-bold tracking-tighter uppercase text-lg">Midnight Unshielded</h1>
-            <p className="text-[10px] font-mono opacity-50 uppercase tracking-widest leading-none">Developer Preview v0.1.0</p>
-          </div>
+      {/* Simplified Navigation */}
+      <nav className="border-b border-[#141414] px-8 py-6 flex justify-between items-baseline bg-white sticky top-0 z-50">
+        <div className="flex items-baseline gap-4">
+          <h1 className="font-sans font-bold tracking-tight text-2xl lowercase italic">midnight.ledger</h1>
+          <span className="text-[10px] font-mono opacity-40 uppercase tracking-widest border border-[#141414]/20 px-1.5 py-0.5">devnet_v0.1</span>
         </div>
 
         <button 
@@ -95,240 +90,177 @@ export default function App() {
             ? midnightProvider.disconnect() 
             : handleAction('connect', connectWallet)
           }
-          className={`flex items-center gap-2 px-4 py-2 border border-[#141414] font-mono text-xs uppercase transition-all hover:bg-[#141414] hover:text-[#E4E3E0] active:scale-95 disabled:opacity-50 ${wallet.isConnected ? 'bg-[#141414] text-[#E4E3E0]' : ''}`}
+          className={`group flex items-center gap-3 px-6 py-2.5 border border-[#141414] font-mono text-[11px] uppercase transition-all active:scale-[0.98] disabled:opacity-50 ${wallet.isConnected ? 'bg-[#141414] text-white' : 'hover:bg-[#141414] hover:text-white'}`}
         >
-          {loading.connect ? (
-            <Activity className="w-4 h-4 animate-spin" />
-          ) : (
-            <Wallet className={`w-4 h-4 ${wallet.isConnected ? 'text-green-400' : ''}`} />
-          )}
+          <div className={`w-2 h-2 rounded-full ${wallet.isConnected ? 'bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.5)]' : 'bg-[#141414]/30 group-hover:bg-white/30'}`} />
           {wallet.isConnected 
-            ? `Connected: ${wallet.address.slice(0, 6)}...${wallet.address.slice(-4)}` 
+            ? `${wallet.address.slice(0, 8)}...${wallet.address.slice(-6)}` 
             : 'Connect Wallet'
           }
         </button>
       </nav>
 
       {!hasExtension && !wallet.isConnected && (
-        <div className="bg-amber-100 border-b border-amber-500 p-2 text-center text-[10px] font-mono uppercase tracking-tighter text-amber-800">
-          No Midnight-compatible wallet detected. Please install <a href="https://www.lace.io/" target="_blank" rel="noopener" className="underline font-bold">Lace</a> or the Midnight extension.
+        <div className="bg-[#141414] text-white p-2.5 text-center text-[10px] font-mono uppercase tracking-[0.15em]">
+          Hardware mismatch detected. <a href="https://www.lace.io/" target="_blank" rel="noopener" className="underline font-bold hover:text-amber-400">Install Lace Protocol</a> required.
         </div>
       )}
 
-      <main className="max-w-7xl mx-auto p-6 md:p-10 grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Left Column: Stats and Info */}
-        <div className="lg:col-span-4 space-y-8">
-          {/* Balance Card */}
-          <section className="border border-[#141414] p-6 bg-white flex flex-col justify-between aspect-square lg:aspect-auto lg:h-64 relative overflow-hidden group">
-            <div className="flex justify-between items-start">
-              <span className="font-mono text-[10px] uppercase opacity-50 italic">Total Unshielded Balance</span>
-              <Activity className="w-4 h-4 opacity-30 group-hover:animate-pulse" />
-            </div>
-            
-            <div className="mt-4">
-              <div className="flex items-baseline gap-2">
-                <span className="text-6xl font-mono tracking-tighter font-bold">
-                  {wallet.isConnected ? Number(wallet.balance).toLocaleString() : '0'}
-                </span>
-                <span className="text-xl font-mono opacity-40">MDT</span>
-              </div>
-              <p className="text-[11px] font-mono mt-2 opacity-50 uppercase">Transactions verified on Midnight L1</p>
-            </div>
-
-            <div className="absolute -bottom-4 -right-4 opacity-[0.03] group-hover:opacity-[0.06] transition-opacity">
-              <Coins size={180} />
-            </div>
-          </section>
-
-          {/* Network Status */}
-          <section className="border border-[#141414] p-4 bg-[#141414] text-[#E4E3E0]">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="font-mono text-[11px] uppercase letter-spacing-widest">Network Integrity</h3>
-              <div className="flex items-center gap-1.5">
-                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-[10px] font-mono text-green-500">Node Active</span>
-              </div>
-            </div>
-            <div className="space-y-2 opacity-70 text-[11px] font-mono">
-              <div className="flex justify-between">
-                <span>Network</span>
-                <span>Midnight DevNet</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Protocol</span>
-                <span>Compact v0.1.0</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Proof Type</span>
-                <span>Groth16 (Unshielded Mode)</span>
-              </div>
-            </div>
-          </section>
-
-          {/* Why Unshielded Segment */}
-          <section className="p-6 border border-dashed border-[#141414] bg-transparent">
-             <div className="flex items-center gap-2 mb-3">
-               <Info className="w-4 h-4 opacity-50" />
-               <h3 className="font-mono text-xs uppercase font-bold">Design Note</h3>
-             </div>
-             <p className="text-sm font-sans italic opacity-70 leading-relaxed">
-               "Unshielded tokens provide the transparency for public ledgers while maintaining the efficiency of the Midnight execution model. Use them for governance, public sales, or testing your first Compact circuits."
-             </p>
-          </section>
-        </div>
-
-        {/* Right Column: Actions */}
-        <div className="lg:col-span-8 space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Mint Form */}
-            <motion.div 
-              layout
-              className="border border-[#141414] bg-white p-6"
-            >
-              <div className="flex items-center gap-2 mb-6">
-                <div className="bg-[#141414] p-1.5 rounded-sm">
-                  <Coins className="w-4 h-4 text-white" />
+      <main className="max-w-6xl mx-auto p-8 md:p-16">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+          
+          {/* Main Account View */}
+          <div className="lg:col-span-12 mb-12">
+             <div className="border-l-4 border-[#141414] pl-8 py-2">
+                <span className="font-mono text-[11px] uppercase opacity-40 tracking-widest block mb-2 font-bold">Authenticated Balance</span>
+                <div className="flex items-baseline gap-4">
+                  <span className="text-8xl font-sans font-black tracking-tighter">
+                    {wallet.isConnected ? Number(wallet.balance).toLocaleString() : '0.00'}
+                  </span>
+                  <span className="text-2xl font-mono opacity-30 italic">dust</span>
                 </div>
-                <h2 className="font-mono font-bold uppercase text-sm">Mint Tokens</h2>
+             </div>
+          </div>
+
+          {/* Action Grid */}
+          <div className="lg:col-span-7 space-y-16">
+            
+            {/* Mint Interaction */}
+            <section className="space-y-8">
+              <div className="flex items-center gap-4 border-b border-[#141414]/10 pb-4">
+                <span className="font-mono text-[10px] opacity-40 font-bold border border-[#141414]/20 rounded-full w-6 h-6 flex items-center justify-center">01</span>
+                <h2 className="font-mono font-bold uppercase text-[11px] tracking-widest">Protocol Generation</h2>
               </div>
               
-              <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-mono uppercase opacity-50">Amount to Mint</label>
+              <div className="grid grid-cols-3 gap-8 items-end">
+                <div className="col-span-2 space-y-3">
+                  <label className="text-[9px] font-mono uppercase opacity-50 block font-bold tracking-wider">Unit Quantity (Uint64)</label>
                   <input 
                     type="number"
                     value={mintAmount}
                     onChange={(e) => setMintAmount(e.target.value)}
-                    className="w-full bg-[#f4f4f4] border-b border-[#141414] p-3 font-mono focus:outline-none focus:bg-white transition-colors"
-                    placeholder="0.00"
+                    className="w-full bg-transparent border-b-2 border-[#141414] py-4 font-sans text-4xl font-bold focus:outline-none focus:border-black transition-colors"
+                    placeholder="0"
                   />
                 </div>
                 <button 
                   disabled={!wallet.isConnected || loading.mint}
                   onClick={() => handleAction('mint', () => mintUnshieldedTokens(Number(mintAmount)))}
-                  className="w-full bg-[#141414] text-white py-3 font-mono text-xs uppercase tracking-widest disabled:opacity-30 flex items-center justify-center gap-2"
+                  className="w-full h-[70px] bg-[#141414] text-white font-mono text-[10px] uppercase tracking-widest disabled:opacity-20 hover:scale-[1.01] transition-transform flex items-center justify-center gap-2"
                 >
-                  {loading.mint ? <Activity className="w-4 h-4 animate-spin" /> : 'Execute Mint Circuit'}
+                  {loading.mint ? <Activity className="w-4 h-4 animate-spin" /> : 'Execute Mint'}
                 </button>
               </div>
-            </motion.div>
+            </section>
 
-            {/* Transfer Form */}
-            <motion.div 
-              layout
-              className="border border-[#141414] bg-white p-6"
-            >
-              <div className="flex items-center gap-2 mb-6">
-                <div className="bg-[#141414] p-1.5 rounded-sm">
-                  <Send className="w-4 h-4 text-white" />
-                </div>
-                <h2 className="font-mono font-bold uppercase text-sm">Send Unshielded</h2>
+            {/* Transfer Interaction */}
+            <section className="space-y-8">
+              <div className="flex items-center gap-4 border-b border-[#141414]/10 pb-4">
+                <span className="font-mono text-[10px] opacity-40 font-bold border border-[#141414]/20 rounded-full w-6 h-6 flex items-center justify-center">02</span>
+                <h2 className="font-mono font-bold uppercase text-[11px] tracking-widest">ledger_dispatch</h2>
               </div>
 
-              <div className="space-y-4">
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-mono uppercase opacity-50">Recipient Address</label>
+              <div className="space-y-10">
+                <div className="space-y-3">
+                  <label className="text-[9px] font-mono uppercase opacity-50 block font-bold tracking-wider">Recipient Address (Standard)</label>
                   <input 
                     type="text"
                     value={sendAddress}
                     onChange={(e) => setSendAddress(e.target.value)}
-                    className="w-full bg-[#f4f4f4] border-b border-[#141414] p-3 font-mono text-xs focus:outline-none focus:bg-white transition-colors"
-                    placeholder="0x..."
+                    className="w-full bg-transparent border-b border-[#141414]/20 py-3 font-mono text-xs focus:outline-none focus:border-[#141414] transition-colors"
+                    placeholder="midnight.addr..."
                   />
                 </div>
-                <div className="space-y-1.5">
-                  <label className="text-[10px] font-mono uppercase opacity-50">Transfer Amount</label>
-                  <input 
-                    type="number"
-                    value={sendAmount}
-                    onChange={(e) => setSendAmount(e.target.value)}
-                    className="w-full bg-[#f4f4f4] border-b border-[#141414] p-3 font-mono focus:outline-none focus:bg-white transition-colors"
-                    placeholder="0.00"
-                  />
+                
+                <div className="grid grid-cols-3 gap-8 items-end">
+                  <div className="col-span-2 space-y-3">
+                    <label className="text-[9px] font-mono uppercase opacity-50 block font-bold tracking-wider">Dispatch Amount</label>
+                    <input 
+                      type="number"
+                      value={sendAmount}
+                      onChange={(e) => setSendAmount(e.target.value)}
+                      className="w-full bg-transparent border-b-2 border-[#141414] py-4 font-sans text-4xl font-bold focus:outline-none focus:border-black transition-colors"
+                      placeholder="0"
+                    />
+                  </div>
+                  <button 
+                    disabled={!wallet.isConnected || loading.send}
+                    onClick={() => handleAction('send', () => sendUnshielded(sendAddress, Number(sendAmount)))}
+                    className="w-full h-[70px] border border-[#141414] bg-white text-[#141414] font-mono text-[10px] uppercase tracking-widest disabled:opacity-20 hover:bg-[#141414] hover:text-white transition-all flex items-center justify-center gap-2"
+                  >
+                     {loading.send ? <Activity className="w-4 h-4 animate-spin" /> : 'Send Session'}
+                  </button>
                 </div>
-                <button 
-                  disabled={!wallet.isConnected || loading.send}
-                  onClick={() => handleAction('send', () => sendUnshielded(sendAddress, Number(sendAmount)))}
-                  className="w-full bg-[#141414] text-white py-3 font-mono text-xs uppercase tracking-widest disabled:opacity-30 flex items-center justify-center gap-2"
-                >
-                   {loading.send ? <Activity className="w-4 h-4 animate-spin" /> : 'Dispatch Proof'}
-                </button>
               </div>
-            </motion.div>
+            </section>
           </div>
 
-          {/* Third Action: Receive / Receipt */}
-          <div className="border border-[#141414] bg-[#E4E3E0] p-6 relative group border-dashed">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div className="flex items-center gap-3">
-                <div className="bg-[#141414] p-2 rounded-full text-white">
-                  <Download className="w-5 h-5" />
-                </div>
-                <div>
-                  <h3 className="font-mono font-bold uppercase text-sm">Receipt Synchronization</h3>
-                  <p className="text-xs font-sans opacity-60">Validate and finalize incoming unshielded transfers on your local ledger.</p>
-                </div>
+          {/* Secondary Column: History & Stats */}
+          <div className="lg:col-span-5 space-y-12">
+            
+            {/* Sync Status */}
+            <div className="bg-[#f0efed] p-8 border border-[#141414]/5 space-y-6">
+              <div className="flex justify-between items-baseline">
+                <h3 className="font-mono font-bold uppercase text-[10px] tracking-widest">Protocol Sync</h3>
+                <span className="text-[9px] font-mono text-green-600 bg-green-100 px-1.5 py-0.5 rounded uppercase">Active</span>
               </div>
+              <p className="text-xs font-sans opacity-60 leading-relaxed">Ensure local ledger state matches Midnight L1 broadcast history. Essential after inbound unshielded transfers.</p>
               <button 
                 disabled={!wallet.isConnected || loading.receive}
                 onClick={() => handleAction('receive', receiveUnshielded)}
-                className="bg-transparent border border-[#141414] hover:bg-[#141414] hover:text-white transition-all px-8 py-3 font-mono text-xs uppercase disabled:opacity-30"
+                className="w-full py-4 border border-[#141414] font-mono text-[10px] uppercase tracking-widest hover:bg-[#141414] hover:text-white transition-all disabled:opacity-20"
               >
-                Sync Incoming
+                {loading.receive ? <Activity className="w-4 h-4 animate-spin" /> : 'Sync Global ledger'}
               </button>
             </div>
-            <div className="absolute top-2 right-2 flex gap-1">
-              <span className="w-1 h-4 bg-[#141414] opacity-20" />
-              <span className="w-1 h-3 bg-[#141414] opacity-20" />
-              <span className="w-1 h-2 bg-[#141414] opacity-20" />
-            </div>
-          </div>
 
-          {/* Transaction History (Mock Log) */}
-          <div className="border border-[#141414] bg-white overflow-hidden">
-            <div className="bg-[#141414] px-4 py-2 flex justify-between items-center">
-              <div className="flex items-center gap-2">
-                <History className="w-4 h-4 text-[#E4E3E0]" />
-                <span className="text-[#E4E3E0] font-mono text-[10px] uppercase font-bold tracking-widest">Recent Activity</span>
+            {/* Audit Log */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between border-b border-[#141414] pb-3">
+                <span className="font-mono text-[11px] uppercase font-bold tracking-widest">Audit_Trail</span>
+                <span className="text-[9px] font-mono opacity-30 italic">Last 5 Sessions</span>
               </div>
-              <span className="text-[#E4E3E0]/40 font-mono text-[9px] uppercase italic">Real-time Feed</span>
-            </div>
-            
-            <div className="divide-y divide-[#141414]/10">
-              {txHistory.length === 0 ? (
-                <div className="p-12 text-center opacity-30 italic font-mono text-xs">No transactions recorded on this session.</div>
-              ) : (
-                txHistory.map((tx) => (
-                  <div key={tx.id} className="p-3 pl-4 flex justify-between items-center hover:bg-[#f9f9f9]">
-                    <div className="flex items-center gap-3">
-                      <div className="w-1 h-4 bg-[#141414]" />
-                      <div>
-                        <div className="font-mono font-bold uppercase text-[11px] leading-tight flex items-center gap-2">
-                          {tx.type} 
-                          <span className="font-normal opacity-50 px-1 border border-[#141414]/20 text-[9px]">{tx.id}</span>
+              
+              <div className="divide-y divide-[#141414]/5">
+                {txHistory.length === 0 ? (
+                  <div className="py-12 text-center text-[10px] uppercase font-mono opacity-20 tracking-tighter">no_ledger_activity_recorded</div>
+                ) : (
+                  txHistory.map((tx) => (
+                    <div key={tx.id} className="py-4 flex justify-between items-center group">
+                      <div className="flex items-center gap-4">
+                        <div className={`w-1.5 h-1.5 rounded-full ${tx.type === 'mint' ? 'bg-blue-400' : 'bg-[#141414]'}`} />
+                        <div>
+                          <p className="font-mono font-bold uppercase text-[10px] leading-tight">{tx.type}</p>
+                          <p className="text-[9px] font-mono opacity-30 tracking-tight">{tx.time} — id.{tx.id}</p>
                         </div>
-                        <div className="text-[10px] font-mono opacity-40">{tx.time}</div>
+                      </div>
+                      <div className="text-right">
+                         <span className="font-sans font-bold text-sm tracking-tight block">
+                          {tx.type === 'send' ? '-' : '+'}{tx.amount}
+                         </span>
+                         <span className="text-[9px] font-mono opacity-30 uppercase italic"> dust</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4">
-                       <span className="font-mono text-xs font-bold">
-                        {tx.type === 'send' ? '-' : '+'}{tx.amount} MDT
-                       </span>
-                       <ExternalLink className="w-3 h-3 opacity-30 cursor-pointer hover:opacity-100" />
-                    </div>
-                  </div>
-                ))
-              )}
+                  ))
+                )}
+              </div>
             </div>
           </div>
         </div>
       </main>
 
-      {/* Footer Info */}
-      <footer className="mt-20 border-t border-[#141414] p-6 text-center">
-        <p className="font-mono text-[10px] uppercase opacity-40 tracking-[0.2em]">
-          Powered by Midnight Protocol & Compact v0.1 | Decentralized Privacy
-        </p>
+      {/* Simplified Footer */}
+      <footer className="mt-32 p-12 border-t border-[#141414]/10">
+        <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="font-mono text-[9px] uppercase opacity-30 tracking-[0.3em]">
+            Midnight Protocol × Compact Specification
+          </p>
+          <div className="flex gap-6 opacity-30 font-mono text-[9px] uppercase tracking-widest">
+            <a href="#" className="hover:opacity-100 italic transition-opacity">Explorer</a>
+            <a href="#" className="hover:opacity-100 italic transition-opacity">Docs</a>
+            <a href="#" className="hover:opacity-100 italic transition-opacity">Status</a>
+          </div>
+        </div>
       </footer>
     </div>
   );
